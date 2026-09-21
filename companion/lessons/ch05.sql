@@ -1,29 +1,32 @@
 -- 第 05 章伴讀：先套用 purchase.sql，再執行本檔。
--- catalog.sql 應已先建立 product 與 sku。
+-- catalog.sql 應已先建立 product 與 sku，且使用 COFFEE-250。
 
 INSERT INTO supplier(name) VALUES ('晨曦豆商');
 
 INSERT INTO purchase_order(supplier_id)
 SELECT id FROM supplier WHERE name = '晨曦豆商';
 
-INSERT INTO purchase_item(purchase_order_id, sku_code, ordered_qty, unit_cost)
-SELECT o.id, 'BEANS-250', 10, 220
+INSERT INTO purchase_item(order_id, sku_code, ordered_qty, unit_cost)
+SELECT o.id, 'COFFEE-250', 10, 220
 FROM purchase_order o
 JOIN supplier s ON s.id = o.supplier_id
 WHERE s.name = '晨曦豆商';
 
--- 第一批只收到 6 件；下單數量仍是 10 件。
-INSERT INTO receipt(purchase_order_id, event_key)
-SELECT id, 'lesson-truck-001'
-FROM purchase_order
-WHERE id = (SELECT max(id) FROM purchase_order);
+INSERT INTO receipt(event) VALUES ('lesson-truck-001');
+INSERT INTO receipt_item(receipt_event, purchase_item_id, qty)
+SELECT 'lesson-truck-001', id, 4
+FROM purchase_item
+WHERE sku_code = 'COFFEE-250'
+ORDER BY id DESC LIMIT 1;
 
-INSERT INTO receipt_item(receipt_id, purchase_item_id, received_qty)
-SELECT r.id, i.id, 6
-FROM receipt r
-JOIN purchase_item i ON i.purchase_order_id = r.purchase_order_id
-WHERE r.event_key = 'lesson-truck-001';
+INSERT INTO receipt(event) VALUES ('lesson-truck-002');
+INSERT INTO receipt_item(receipt_event, purchase_item_id, qty)
+SELECT 'lesson-truck-002', id, 3
+FROM purchase_item
+WHERE sku_code = 'COFFEE-250'
+ORDER BY id DESC LIMIT 1;
 
-SELECT sku_code, ordered_qty, received_qty, outstanding_qty
+SELECT sku_code, ordered_qty, received_qty, remaining_qty
 FROM purchase_item_status
-ORDER BY sku_code;
+WHERE sku_code = 'COFFEE-250'
+ORDER BY id DESC LIMIT 1;

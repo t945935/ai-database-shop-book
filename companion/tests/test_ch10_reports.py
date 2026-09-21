@@ -66,6 +66,8 @@ def test_ch10_refund_is_not_counted_as_sales_and_cost_uses_shipment_snapshot(db)
         ).fetchall() == [(D("100"),), (D("40"),), (D("120"),), (D("120"),), (D("120"),)]
 
 
+
+
 def test_ch10_window_rank_orders_profit_within_period(db):
     ch10 = ch10_db(db)
     with psycopg.connect(ch10) as c:
@@ -74,4 +76,17 @@ def test_ch10_window_rank_orders_profit_within_period(db):
         ('BEANS-250',date(2026,9,1),D('990'),1),
         ('FILTER-100',date(2026,9,1),D('160'),2),
         ('EMPTY-100',date(2026,9,1),D('0'),3),
+    ]
+
+
+def test_ch10_equal_profit_keeps_tied_rank(db):
+    ch10 = ch10_db(db)
+    with psycopg.connect(ch10) as c:
+        c.execute("INSERT INTO ch10_sku(code,name) VALUES ('TIE-100','同分測試')")
+        shipment=c.execute("INSERT INTO ch10_shipment(sku_code,shipped_on,qty,unit_cost_snapshot) VALUES ('TIE-100','2026-09-10',1,0) RETURNING id").fetchone()[0]
+        c.execute("INSERT INTO ch10_sale(shipment_id,sku_code,sold_on,status,qty,unit_price) VALUES (%s,'TIE-100','2026-09-10','shipped',1,0)",(shipment,))
+        rows=c.execute(Path('lessons/ch10_rank.sql').read_text()).fetchall()
+    assert [r for r in rows if r[2] == D('0')] == [
+        ('EMPTY-100',date(2026,9,1),D('0'),3),
+        ('TIE-100',date(2026,9,1),D('0'),3),
     ]

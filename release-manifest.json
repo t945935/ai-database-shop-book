@@ -1,0 +1,25 @@
+{
+  "release_tag": "v0.1.0-preview",
+  "commit": "pending-release-commit",
+  "tests": "105 passed",
+  "archive": "dist/companion-learner-reviewed-preview.zip",
+  "archive_sha256": "faac6e8530f1cc7ce00749e02f460015cff2d62ea38b480cbfad0e38f83e731c",
+  "runtime": {
+    "postgresql": "16.15",
+    "python": "3.12.3",
+    "psycopg": "3.2.10",
+    "pytest": "8.4.2"
+  },
+  "verified": [
+    "isolated PostgreSQL regression",
+    "clean extracted archive regression",
+    "pgvector extension cosine query",
+    "integrated checkout/payment/shipment teaching fixture"
+  ],
+  "not_verified": [
+    "real model/provider",
+    "Docker/Ollama",
+    "production ERP governance",
+    "human learner trial"
+  ]
+}

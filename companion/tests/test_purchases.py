@@ -52,3 +52,14 @@ def test_receive_service_replays_same_payload_and_rejects_conflict(purchase_db):
         receive_idempotent(db,item,'GRN-SERVICE',3)
     with psycopg.connect(db) as c:
         assert c.execute("SELECT count(*) FROM receipt_item WHERE receipt_event='GRN-SERVICE'").fetchone()==(1,)
+
+
+def test_ch05_lesson_runs_against_purchase_schema(catalog_db):
+    with psycopg.connect(catalog_db) as c:
+        c.execute(Path('purchase.sql').read_text())
+        c.execute("INSERT INTO product(name) VALUES ('日常配方豆') RETURNING id")
+        product_id=c.execute("SELECT max(id) FROM product").fetchone()[0]
+        c.execute("INSERT INTO sku(code,product_id,price) VALUES ('COFFEE-250',%s,320)",(product_id,))
+        c.execute(Path('lessons/ch05.sql').read_text())
+        rows=c.execute("SELECT sku_code,ordered_qty,received_qty,remaining_qty FROM purchase_item_status WHERE sku_code='COFFEE-250' ORDER BY id DESC LIMIT 1").fetchall()
+        assert rows == [('COFFEE-250',10,7,3)]

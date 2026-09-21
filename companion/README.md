@@ -95,7 +95,7 @@ UV=/absolute/path/to/uv bash run.sh
 
 ## 已驗證項目
 
-目前完整套件 **97 passed**；P1 初始紀錄為 32 passed。含 10 輪「兩個已存在的獨立 backend connection 同搶最後一件」，輸出 backend PID，僅一個保留成功；另有並行重送收貨與並行超退測試。
+目前完整套件 **99 passed**；P1 初始紀錄為 32 passed。含 10 輪「兩個已存在的獨立 backend connection 同搶最後一件」，輸出 backend PID，僅一個保留成功；另有並行重送收貨與並行超退測試。
 
 其他測試包含移動加權平均 130、原成本 130 退貨（新進價已變仍沿用原快照）、同鍵 payload 衝突、重複出貨、零庫存尾差、分次全退尾差、DB constraint 故障注入後整個出貨回滾、對帳正常與人為差異、保留來源差異、負庫存和孤兒資料拒絕、非法數量／成本拒絕。
 

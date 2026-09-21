@@ -2,9 +2,9 @@
 
 目前公開取得方式是從本 repo 取得 `companion/` 原始檔並直接執行；下列 ZIP 是作者工作區的驗證產物，尚未作為 GitHub Release asset 發布。
 
-- 預覽包 SHA256：`f5337cee41b8150b87c3b3b544902ceae10b82447a9c214f6886a74a31e55bb3`
+- 預覽包 SHA256：`87e0d1abe4f904ed1724d854d11f2f4f9f49ae2b2367ed7cecc4bc7b8f4411f3`
 - 本機驗證：PostgreSQL 16.15、Python 3.12.3、psycopg 3.2.10、pytest 8.4.2。
-- 完整回歸：97 passed；乾淨解壓副本與 final lab 亦 97 passed。
+- 完整回歸：99 passed；乾淨解壓副本與 final lab 亦 99 passed。
 - 目前範圍：商品／SKU、訂單價格快照、採購收貨練習、單 SKU 庫存、付款事件練習、報表、索引、文件版本引用、deterministic 補貨規則、冪等收貨服務、隔離安全／migration／restore 測試、final lab 與模型無關的唯讀 AI 工具。
 - 尚未完成：正式多表服務整合、真實金流、pgvector、真實模型、Docker、權限／migration／備份 Release 驗收、真人試讀。
 

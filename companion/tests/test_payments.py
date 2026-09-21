@@ -2,7 +2,7 @@ from pathlib import Path
 import psycopg
 import pytest
 from test_catalog import catalog_db
-
+from payment_service import capture_idempotent
 
 @pytest.fixture
 def payment_db(catalog_db):
@@ -28,6 +28,20 @@ def test_payment_event_is_idempotent_and_statuses_are_separate(payment_db):
         assert c.execute("SELECT status FROM sales_order WHERE id=%s",(order,)).fetchone()==('confirmed',)
         assert c.execute("SELECT status FROM fulfillment WHERE order_id=%s",(order,)).fetchone()==('unfulfilled',)
         assert c.execute("SELECT count(*) FROM payment_event WHERE event='PAY-1'").fetchone()==(1,)
+
+
+
+
+def test_payment_service_replays_same_payload_and_rejects_conflict(payment_db):
+    db,order=payment_db
+    first=capture_idempotent(db,'PAY-SERVICE',order,'320.00','captured')
+    replay=capture_idempotent(db,'PAY-SERVICE',order,'320.00','captured')
+    assert first['replayed'] is False
+    assert replay['replayed'] is True
+    with pytest.raises(ValueError, match='payload conflict'):
+        capture_idempotent(db,'PAY-SERVICE',order,'321.00','captured')
+    with psycopg.connect(db) as c:
+        assert c.execute("SELECT count(*) FROM payment_event WHERE event='PAY-SERVICE'").fetchone()==(1,)
 
 
 def test_payment_amount_cannot_be_negative(payment_db):

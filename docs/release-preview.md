@@ -1,6 +1,6 @@
 # 伴讀預覽
 
-目前公開的是未正式出版的伴讀 preview，不是完整書稿或 production ERP。
+目前公開取得方式是從本 repo 取得 `companion/` 原始檔並直接執行；下列 ZIP 是作者工作區的驗證產物，尚未作為 GitHub Release asset 發布。
 
 - 預覽包 SHA256：`55f3a92c5778ffcce618aa1b786558159684272778c610d2a5a5d0efd076efc6`
 - 本機驗證：PostgreSQL 16.15、Python 3.12.3、psycopg 3.2.10、pytest 8.4.2。

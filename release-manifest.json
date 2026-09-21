@@ -1,6 +1,6 @@
 {
   "release_tag": "v0.1.0-preview",
-  "commit": "pending-release-commit",
+  "commit": "b955909d247ed4cb7a1c9dfa12239df5f2a28e73",
   "tests": "105 passed",
   "archive": "dist/companion-learner-reviewed-preview.zip",
   "archive_sha256": "ab0d6c6a2ef7720c3a32e3c1ab3c15fd0248283509edc2c55af8106c60688bd0",

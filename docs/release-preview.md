@@ -2,7 +2,7 @@
 
 目前公開的是未正式出版的伴讀 preview，不是完整書稿或 production ERP。
 
-- 預覽包 SHA256：`c846befe6afb64cabe744c3f0b13c8509ae17b911e91aef57c441a7c9205600d`
+- 預覽包 SHA256：`1040d2d57f5df9eb4db8c1de26f211670a5acbdd0b64b707b3899f47769ebd78`
 - 本機驗證：PostgreSQL 16.15、Python 3.12.3、psycopg 3.2.10、pytest 8.4.2。
 - 完整回歸：83 passed；乾淨解壓副本亦 83 passed。
 - 目前範圍：商品／SKU、訂單價格快照、採購收貨練習、單 SKU 庫存、付款事件練習、報表、索引與模型無關的唯讀 AI 工具。

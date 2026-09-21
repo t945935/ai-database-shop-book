@@ -1,0 +1,18 @@
+# Never publish secrets or local database state
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+*.log
+*.dump
+*.backup
+pgdata/
+.runtime/
+.cache/
+# Editorial-only material belongs in the separate workspace
+manuscript/
+planning/
+evidence/

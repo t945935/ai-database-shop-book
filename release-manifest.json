@@ -3,7 +3,7 @@
   "commit": "pending-release-commit",
   "tests": "105 passed",
   "archive": "dist/companion-learner-reviewed-preview.zip",
-  "archive_sha256": "3be927b728bfe0bab7bd9f2e608870b311ea0dc4351e54cfc442c7f0ea4d8c23",
+  "archive_sha256": "ab0d6c6a2ef7720c3a32e3c1ab3c15fd0248283509edc2c55af8106c60688bd0",
   "runtime": {
     "postgresql": "16.15",
     "python": "3.12.3",

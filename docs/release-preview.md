@@ -3,7 +3,7 @@
 正式 Release asset：
 https://github.com/t945935/ai-database-shop-book/releases/tag/v0.1.0-preview
 
-- 預覽包 SHA256：`3be927b728bfe0bab7bd9f2e608870b311ea0dc4351e54cfc442c7f0ea4d8c23`
+- 預覽包 SHA256：`ab0d6c6a2ef7720c3a32e3c1ab3c15fd0248283509edc2c55af8106c60688bd0`
 - 完整回歸：105 passed；乾淨解壓副本與 final lab 亦 105 passed。
 - 唯一版本資料：`release-manifest.json`
 - 已完成：第 05 章採購 lesson/schema 對齊、多表整合教學 fixture、pgvector extension／cosine 查詢、portable Python runner。

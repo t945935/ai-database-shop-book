@@ -42,7 +42,8 @@ def test_inventory_snapshot_is_bounded_and_has_audit_metadata(db):
 
     assert result["query_name"] == "inventory_snapshot"
     assert re.fullmatch(r"inventory_snapshot:[0-9a-f]{32}", result["query_id"])
-    assert result["data_as_of"] == datetime(2026, 9, 2, 10, tzinfo=timezone.utc)
+    assert result["latest_event_at_in_range"] == datetime(2026, 9, 2, 10, tzinfo=timezone.utc)
+    assert "data_as_of" not in result
     assert result["rows"] == [
         {"sku": "COFFEE-250", "physical": 10, "reserved": 2, "available": 8}
     ]

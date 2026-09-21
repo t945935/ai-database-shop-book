@@ -47,7 +47,7 @@ def execute_tool(db: str, query_name: str, arguments: dict) -> dict:
     with psycopg.connect(db) as conn:
         with conn.transaction():
             conn.execute("SET TRANSACTION READ ONLY")
-            data_as_of = conn.execute(
+            latest_event_at_in_range = conn.execute(
                 """
                 SELECT max(created_at)
                 FROM ledger
@@ -73,7 +73,7 @@ def execute_tool(db: str, query_name: str, arguments: dict) -> dict:
     return {
         "query_name": query_name,
         "query_id": f"{query_name}:{uuid4().hex}",
-        "data_as_of": data_as_of,
+        "latest_event_at_in_range": latest_event_at_in_range,
         "rows": [
             {
                 "sku": sku,

@@ -97,14 +97,7 @@ UV=/absolute/path/to/uv bash run.sh
 
 `integrated_service.py` 將 checkout、payment、shipment 串成同一個可重跑服務；`tests/test_integrated_service.py` 驗證冪等、付款前不可出貨及出貨後庫存結果。
 
-`vector.sql` 使用真實 PostgreSQL `vector` extension 與 cosine distance；本機驗證已通過。要執行真實 embedding model：
-
-```bash
-docker compose up -d postgres ollama model-init
-SHOP_DSN=postgresql://postgres:shop@127.0.0.1:55432/shop python model_smoke.py
-```
-
-這個流程會向 Ollama 的 `nomic-embed-text` 請求 768 維 embedding，再寫入 pgvector 並執行最近鄰查詢。沒有 Docker 或 Ollama 時，不可把 model smoke test 當成已通過。
+`vector.sql` 使用真實 PostgreSQL `vector` extension 與 cosine distance；本機驗證已通過。書中只說明未來可接 embedding provider，不提供 Docker、Ollama 或真實模型實作，也不把模型驗收列入本版測試。
 
 ## 跨平台入口
 

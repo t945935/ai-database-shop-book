@@ -59,6 +59,20 @@ def reserve(c, event, sku, qty):
         _post(c,event,"reserve",sku,payload,0,qty,Decimal(0))
 
 
+def confirm_and_reserve(c, order_id, event, sku, qty, target_status='confirmed'):
+    if target_status != 'confirmed':
+        raise ValueError('order must be draft')
+    with c.transaction():
+        status = c.execute("SELECT status FROM sales_order WHERE id=%s FOR UPDATE", (order_id,)).fetchone()
+        if not status or status[0] != 'draft':
+            raise ValueError('order must be draft')
+        item = c.execute("SELECT qty FROM order_item WHERE order_id=%s AND sku_code=%s", (order_id, sku)).fetchone()
+        if not item or item[0] != qty:
+            raise ValueError('order item mismatch')
+        reserve(c, event, sku, qty)
+        c.execute("UPDATE sales_order SET status='confirmed' WHERE id=%s", (order_id,))
+
+
 def release(db, event, reservation):
     payload = ["release", reservation]
     with psycopg.connect(db) as c:

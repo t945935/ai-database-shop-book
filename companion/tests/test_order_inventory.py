@@ -33,3 +33,22 @@ def test_order_cannot_reserve_more_than_available(order_inventory_db):
         with pytest.raises(ValueError, match='insufficient'):
             shop.reserve(c, 'order-other', 'COFFEE-250', 1)
     assert shop.stock(db,'COFFEE-250')[:3] == (1,1,0)
+def test_confirm_and_reserve_commits_order_and_inventory_together(order_inventory_db):
+    db,order=order_inventory_db
+    with psycopg.connect(db) as c:
+        shop.confirm_and_reserve(c, order, f'order-{order}', 'COFFEE-250', 1)
+    with psycopg.connect(db) as c:
+        assert c.execute("SELECT status FROM sales_order WHERE id=%s",(order,)).fetchone()==('confirmed',)
+        assert c.execute("SELECT count(*) FROM reservation WHERE event=%s",(f'order-{order}',)).fetchone()==(1,)
+    assert shop.stock(db,'COFFEE-250')[:3] == (1,1,0)
+
+
+def test_confirm_and_reserve_rolls_back_both_sides_on_order_failure(order_inventory_db):
+    db,order=order_inventory_db
+    with psycopg.connect(db) as c:
+        with pytest.raises(ValueError, match='order must be draft'):
+            shop.confirm_and_reserve(c, order, 'order-fail', 'COFFEE-250', 1, target_status='shipped')
+    with psycopg.connect(db) as c:
+        assert c.execute("SELECT status FROM sales_order WHERE id=%s",(order,)).fetchone()==('draft',)
+        assert c.execute("SELECT count(*) FROM reservation WHERE event='order-fail'").fetchone()==(0,)
+    assert shop.stock(db,'COFFEE-250')[:3] == (1,0,1)

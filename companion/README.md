@@ -1,4 +1,4 @@
-# PostgreSQL 進銷存教學原型：第 02–13 章伴讀
+# PostgreSQL 進銷存教學原型：第 02–16 章伴讀
 
 這是單店、單倉、TWD、整數件數的**教學驗證**，不是正式 ERP。每次業務操作只處理一個 SKU；沒有 SQLite、假資料庫或假 API。測試會真的建立 PostgreSQL cluster，再以 psycopg 連線執行 SQL。
 
@@ -9,7 +9,9 @@
 - `order.sql`、`payment.sql`：訂單快照、付款事件與履約狀態練習。
 - `ai_tools.py`：模型無關的唯讀白名單工具；真實模型未接入。
 - `replenishment.py`：模型無關、無副作用的補貨規則；尚未建立採購確認服務。
+- `final_lab.sh`：保存完整回歸的 final lab wrapper。
 - `lessons/ch14_documents.sql`：文件版本、生效期間與可引用段落練習。
+- `tests/test_security_migrations.py`：隔離角色、migration rollback 與 dump restore 驗收。
 - `lessons/ch02.sql`：目錄新增、改價、停售及移除未使用草稿。
 - `lessons/ch03_setup.sql`：虛構銷售與 SKU 標籤，**不是正式訂單模型**。
 - `lessons/ch03_report.sql`：保留零銷售 SKU 的固定九月練習報表。
@@ -93,7 +95,7 @@ UV=/absolute/path/to/uv bash run.sh
 
 ## 已驗證項目
 
-目前完整套件 **91 passed**；P1 初始紀錄為 32 passed。含 10 輪「兩個已存在的獨立 backend connection 同搶最後一件」，輸出 backend PID，僅一個保留成功；另有並行重送收貨與並行超退測試。
+目前完整套件 **95 passed**；P1 初始紀錄為 32 passed。含 10 輪「兩個已存在的獨立 backend connection 同搶最後一件」，輸出 backend PID，僅一個保留成功；另有並行重送收貨與並行超退測試。
 
 其他測試包含移動加權平均 130、原成本 130 退貨（新進價已變仍沿用原快照）、同鍵 payload 衝突、重複出貨、零庫存尾差、分次全退尾差、DB constraint 故障注入後整個出貨回滾、對帳正常與人為差異、保留來源差異、負庫存和孤兒資料拒絕、非法數量／成本拒絕。
 

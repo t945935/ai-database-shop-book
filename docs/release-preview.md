@@ -14,6 +14,8 @@
 cd companion
 bash bootstrap_pg.sh
 bash run.sh
+# 完整交付驗收
+bash final_lab.sh
 ```
 
 目前只驗證 WSL2／Ubuntu 24.04 amd64；請使用虛構資料與隔離環境。

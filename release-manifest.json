@@ -1,9 +1,9 @@
 {
   "release_tag": "v0.1.0-preview",
   "commit": "937c6763e1530046c67245de674ade72d3a0275d",
-  "tests": "107 passed",
+  "tests": "108 passed",
   "archive": "dist/companion-learner-reviewed-preview.zip",
-  "archive_sha256": "053be1f974aa2560c39326037f0b06fe367d08b3883d544f47ae81c5a26459e5",
+  "archive_sha256": "5104c262360649b9a23606822334fda25a05d68fcd63dbbf3f0f15185939d6ed",
   "runtime": {
     "postgresql": "16.15",
     "python": "3.12.3",

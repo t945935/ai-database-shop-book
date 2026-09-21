@@ -79,6 +79,8 @@ def test_ch10_window_rank_orders_profit_within_period(db):
     ]
 
 
+
+
 def test_ch10_equal_profit_keeps_tied_rank(db):
     ch10 = ch10_db(db)
     with psycopg.connect(ch10) as c:
@@ -89,4 +91,17 @@ def test_ch10_equal_profit_keeps_tied_rank(db):
     assert [r for r in rows if r[2] == D('0')] == [
         ('EMPTY-100',date(2026,9,1),D('0'),3),
         ('TIE-100',date(2026,9,1),D('0'),3),
+    ]
+
+
+def test_ch10_cross_period_sale_and_shipment_are_reported_by_their_own_dates(db):
+    ch10 = ch10_db(db)
+    with psycopg.connect(ch10) as c:
+        c.execute("INSERT INTO ch10_sku(code,name) VALUES ('CROSS-100','跨期測試')")
+        shipment=c.execute("INSERT INTO ch10_shipment(sku_code,shipped_on,qty,unit_cost_snapshot) VALUES ('CROSS-100','2026-10-01',1,50) RETURNING id").fetchone()[0]
+        c.execute("INSERT INTO ch10_sale(shipment_id,sku_code,sold_on,status,qty,unit_price) VALUES (%s,'CROSS-100','2026-09-30','shipped',1,100)",(shipment,))
+        rows=c.execute("SELECT period_start,gross_sales,cogs,gross_profit FROM ch10_monthly_operations WHERE sku_code='CROSS-100' ORDER BY period_start").fetchall()
+    assert rows == [
+        (date(2026,9,1),D('100'),D('0'),D('100')),
+        (date(2026,10,1),D('0'),D('50'),D('-50')),
     ]

@@ -93,10 +93,31 @@ UV=/absolute/path/to/uv bash run.sh
 - 退貨後以新的成本總額／數量重算平均成本，可能不同於當前平均或原平均。
 - 精度是庫存成本教學口徑，不代表付款／發票精度。極端數值、Decimal context 邊界與大型壓力測試尚未驗證；超出 NUMERIC 範圍會由資料庫拒絕。
 
-## 已驗證項目
+## 多表整合與 pgvector
 
-目前完整套件 **99 passed**；P1 初始紀錄為 32 passed。含 10 輪「兩個已存在的獨立 backend connection 同搶最後一件」，輸出 backend PID，僅一個保留成功；另有並行重送收貨與並行超退測試。
+`integrated_service.py` 將 checkout、payment、shipment 串成同一個可重跑服務；`tests/test_integrated_service.py` 驗證冪等、付款前不可出貨及出貨後庫存結果。
 
+`vector.sql` 使用真實 PostgreSQL `vector` extension 與 cosine distance；本機驗證已通過。要執行真實 embedding model：
+
+```bash
+docker compose up -d postgres ollama model-init
+SHOP_DSN=postgresql://postgres:shop@127.0.0.1:55432/shop python model_smoke.py
+```
+
+這個流程會向 Ollama 的 `nomic-embed-text` 請求 768 維 embedding，再寫入 pgvector 並執行最近鄰查詢。沒有 Docker 或 Ollama 時，不可把 model smoke test 當成已通過。
+
+## 跨平台入口
+
+Ubuntu 的 `run.sh`／`bootstrap_pg.sh` 是隔離教學環境；Windows、macOS、Linux 可先自行啟動 PostgreSQL，再執行：
+
+```bash
+SHOP_DSN=postgresql://... python run_external.py
+```
+
+`.github/workflows/cross-platform.yml` 會在三個 GitHub Actions runner 執行 portable runner。
+目前完整套件 **103 passed**；P1 初始紀錄為 32 passed。含 10 輪「兩個已存在的獨立 backend connection 同搶最後一件」，輸出 backend PID，僅一個保留成功；另有並行重送收貨與並行超退測試。
+
+新增整合驗收包含：checkout → payment → shipment 的多表交易服務 3 項，以及 PostgreSQL `pgvector` extension／cosine 查詢 1 項。
 其他測試包含移動加權平均 130、原成本 130 退貨（新進價已變仍沿用原快照）、同鍵 payload 衝突、重複出貨、零庫存尾差、分次全退尾差、DB constraint 故障注入後整個出貨回滾、對帳正常與人為差異、保留來源差異、負庫存和孤兒資料拒絕、非法數量／成本拒絕。
 
 內部證據在上層 `evidence/p1/`，不屬於公開讀者包：`01`–`08` 保存逐步 RED／GREEN，`09-regressions-green.log` 是補充回歸（不是事後偽稱 RED）；`final-green.log` 是正式入口重跑；`clean-copy-green.log` 是無 `.venv` 的新目錄重建並通過，沿用已驗證 PG／uv cache，並非全新 OS 的測試。

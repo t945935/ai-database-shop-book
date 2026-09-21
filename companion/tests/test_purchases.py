@@ -3,6 +3,7 @@ from pathlib import Path
 import psycopg
 import pytest
 from test_catalog import catalog_db
+from purchase_service import receive_idempotent
 
 @pytest.fixture
 def purchase_db(catalog_db):
@@ -41,3 +42,13 @@ def test_same_receipt_event_is_unique(purchase_db):
         receive(c,item,'GRN-1',4)
         with pytest.raises(psycopg.errors.UniqueViolation):
             with c.transaction(): c.execute("INSERT INTO receipt(event) VALUES ('GRN-1')")
+
+
+def test_receive_service_replays_same_payload_and_rejects_conflict(purchase_db):
+    db,item=purchase_db
+    assert receive_idempotent(db,item,'GRN-SERVICE',4)=={'event':'GRN-SERVICE','qty':4,'replayed':False}
+    assert receive_idempotent(db,item,'GRN-SERVICE',4)=={'event':'GRN-SERVICE','qty':4,'replayed':True}
+    with pytest.raises(ValueError,match='idempotency payload conflict'):
+        receive_idempotent(db,item,'GRN-SERVICE',3)
+    with psycopg.connect(db) as c:
+        assert c.execute("SELECT count(*) FROM receipt_item WHERE receipt_event='GRN-SERVICE'").fetchone()==(1,)

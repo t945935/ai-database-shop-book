@@ -1,3 +1,4 @@
+from datetime import date
 from decimal import Decimal as D
 from pathlib import Path
 
@@ -63,3 +64,14 @@ def test_ch10_refund_is_not_counted_as_sales_and_cost_uses_shipment_snapshot(db)
         assert c.execute(
             "SELECT unit_cost_snapshot FROM ch10_shipment ORDER BY shipped_on, id"
         ).fetchall() == [(D("100"),), (D("40"),), (D("120"),), (D("120"),), (D("120"),)]
+
+
+def test_ch10_window_rank_orders_profit_within_period(db):
+    ch10 = ch10_db(db)
+    with psycopg.connect(ch10) as c:
+        rows=c.execute(Path('lessons/ch10_rank.sql').read_text()).fetchall()
+    assert rows == [
+        ('BEANS-250',date(2026,9,1),D('990'),1),
+        ('FILTER-100',date(2026,9,1),D('160'),2),
+        ('EMPTY-100',date(2026,9,1),D('0'),3),
+    ]

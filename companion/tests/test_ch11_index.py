@@ -16,5 +16,8 @@ def test_index_exists_and_query_plan_can_use_it(catalog_db):
         assert c.execute("SELECT indexname FROM pg_indexes WHERE indexname='demo_sale_sku_date_idx'").fetchone() == ('demo_sale_sku_date_idx',)
         c.execute('SET enable_seqscan=off')
         diagnostic='\n'.join(row[0] for row in c.execute("EXPLAIN SELECT * FROM demo_sale WHERE sku_code='COFFEE-250' AND sold_on >= DATE '2026-09-01'").fetchall())
+        analyze='\n'.join(row[0] for row in c.execute("EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM demo_sale WHERE sku_code='COFFEE-250' AND sold_on >= DATE '2026-09-01'").fetchall())
         print('PLAN INDEX DIAGNOSTIC:',diagnostic)
+        print('PLAN ANALYZE BUFFERS:',analyze)
         assert 'demo_sale_sku_date_idx' in diagnostic
+        assert 'Buffers:' in analyze
